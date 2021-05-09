@@ -14,7 +14,113 @@
     
     <script type="text/processing">
     
-      /*  INSERT CODE HERE */
+      import processing.video.*;
+      Movie treno;
+      Movie aereo;
+      PImage img;
+      PImage img2;
+      int VideoPlaying;
+      int Menu;
+
+      //int time;
+      //boolean leftIsPressed, shiftIsPressed, rightIsPressed;
+      //boolean keyAction;
+      boolean treno1 = false;
+      boolean aereo1 = false;
+
+
+
+      void setup() {
+        size(1280, 960);
+        img = loadImage("data/intro1.jpg");
+        img2 = loadImage("data/intro2.jpg");
+        treno = new Movie(this, "data/treno_raps.mp4");
+        aereo = new Movie(this, "data/aereo_raps.mp4");
+
+      }
+
+      void draw() {
+        background(0);
+        //textSize(width/12);
+        //textAlign(CENTER, CENTER);
+        //text("Train or Plane?", 0,-50, width, height);
+        //text("Enter to start", 0,100, width, height);
+        if (mousePressed == true) {
+         image(img2, 0, 0, width, height);
+        } else {
+          image(img, 0, 0, width, height);
+        }
+
+         toogle();
+        if (treno1) {
+          treno();
+          aereo.volume(0);
+        }
+        if (aereo1) {
+          aereo();
+          treno.volume(0);
+        }
+
+      }
+
+
+      void movieEvent(Movie m) {
+       m.read();
+      }
+
+      void keyPressed() { // Step #5 : Create new entry as : if (key == NEW_KEY { VideoPlaying = NUMBER_SAMEAS_VIDEO_NUMBER; println(Videoplaying);} ================================================================
+        if (keyCode == ENTER) { // Video 01
+          VideoPlaying = 1 ;
+          println(VideoPlaying);
+           aereo.volume(0);
+           aereo.loop();
+           treno.loop();
+        }
+      }
+
+      void mousePressed() { // Step #5 : Create new entry as : if (key == NEW_KEY { VideoPlaying = NUMBER_SAMEAS_VIDEO_NUMBER; println(Videoplaying);} ================================================================
+        if (VideoPlaying == 1) { // Video 01
+          VideoPlaying = 2 ;
+          aereo.volume(100);
+          println(VideoPlaying);
+          treno.volume(0);
+        }
+      }
+
+      void mouseReleased() {
+      if (VideoPlaying == 2) { 
+          VideoPlaying = 1 ;
+          treno.volume(100);
+          println(VideoPlaying);
+          aereo.volume(0);
+        }
+      }
+
+      void treno() { 
+      println("time");
+        println("treno");
+        image(treno, 0, 0, width, height);
+
+      }
+
+      void aereo() { 
+      println("time");
+        println("aereo");
+        image(aereo, 0, 0, width, height);
+
+      }
+
+      void toogle() { 
+        if (VideoPlaying == 1) {
+          treno1 = true;
+          aereo1 = false;
+        }
+
+        if (VideoPlaying == 2) {
+          treno1 = false;
+          aereo1 = true;
+        }
+      }
 
     </script>
     <canvas id="sketch" style="border: 1px solid black;"></canvas>
