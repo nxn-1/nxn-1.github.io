@@ -4,123 +4,91 @@
 
   <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <title>N=N+1</title>
+      <title>Processing Demo</title>
       <script type="text/javascript" src="js/processing.js"></script>
   </head>
   
   <body>
-    <h1>N=N+1</h1>
-    <p>Interactive video</p>
+    <h1>PUT YOUR TITLE HERE</h1>
+    <p>ADD DESCRIPTION HERE</p>
     
     <script type="text/processing">
     
-      import processing.video.*;
-      Movie treno;
-      Movie aereo;
-      PImage img;
-      PImage img2;
-      int VideoPlaying;
-      int Menu;
+          PImage src, img, sel;
+          int x, y, w, h, mX, mY;
+          boolean painting = false;
+          float grid = 20;
 
-      //int time;
-      //boolean leftIsPressed, shiftIsPressed, rightIsPressed;
-      //boolean keyAction;
-      boolean treno1 = false;
-      boolean aereo1 = false;
+          void setup() {
+          size(800, 800);
+          rectMode(CORNERS);
+          src = loadImage("image.png");
+          src.resize(width, height);
+          img = src.get();
+          }
 
+          void draw() {
+          image(img, 0, 0);
+          if (mousePressed) {
+          mX = gridify(mouseX);
+          mY = gridify(mouseY);
+          if (painting) {
+          int xDist = abs(mX-gridify(pmouseX));
+          int yDist = abs(mY-gridify(pmouseY));
+          int steps = max(xDist, yDist);
+          for (int i=0; i<steps; i++) {
+          float lerpX = lerp(gridify(pmouseX), mX, (1.0/steps)*i);
+          float lerpY = lerp(gridify(pmouseY), mY, (1.0/steps)*i);
+          image(sel, lerpX-(x), lerpY-(y));
+          }
+          img = get();
+          } else {
+          stroke(#FF0000);
+          strokeWeight(2);
+          noFill();
+          rect(x, y, mX, mY);
+          }
+          }
+          }
 
+          void mousePressed() {
+          mX = gridify(mouseX);
+          mY = gridify(mouseY);
+          if (!painting) {
+          x = mX;
+          y = mY;
+          } else {
+          x = mX-x;
+          y = mY-y;
+          }
+          }
 
-      void setup() {
-        size(1280, 960);
-        img = loadImage("data/intro1.jpg");
-        img2 = loadImage("data/intro2.jpg");
-        treno = new Movie(this, "data/treno_raps.mp4");
-        aereo = new Movie(this, "data/aereo_raps.mp4");
+          void mouseReleased() {
+          mX = gridify(mouseX);
+          mY = gridify(mouseY);
+          if (mX!=x && mY!=y && !painting) {
+          w = abs(x-mX);
+          h = abs(y-mY);
+          if (mX < x) x = mX;
+          if (mY < y) y = mY;
+          sel = src.get(x, y, w, h);
+          painting = true;
+          } else {
+          painting = false;
+          }
+          }
 
-      }
+          void keyReleased() {
+          if (keyCode == BACKSPACE) {
+          img = src.get();
+          painting = false;
+          }
+          }
 
-      void draw() {
-        background(0);
-        //textSize(width/12);
-        //textAlign(CENTER, CENTER);
-        //text("Train or Plane?", 0,-50, width, height);
-        //text("Enter to start", 0,100, width, height);
-        if (mousePressed == true) {
-         image(img2, 0, 0, width, height);
-        } else {
-          image(img, 0, 0, width, height);
-        }
-
-         toogle();
-        if (treno1) {
-          treno();
-          aereo.volume(0);
-        }
-        if (aereo1) {
-          aereo();
-          treno.volume(0);
-        }
-
-      }
-
-
-      void movieEvent(Movie m) {
-       m.read();
-      }
-
-      void keyPressed() { // Step #5 : Create new entry as : if (key == NEW_KEY { VideoPlaying = NUMBER_SAMEAS_VIDEO_NUMBER; println(Videoplaying);} ================================================================
-        if (keyCode == ENTER) { // Video 01
-          VideoPlaying = 1 ;
-          println(VideoPlaying);
-           aereo.volume(0);
-           aereo.loop();
-           treno.loop();
-        }
-      }
-
-      void mousePressed() { // Step #5 : Create new entry as : if (key == NEW_KEY { VideoPlaying = NUMBER_SAMEAS_VIDEO_NUMBER; println(Videoplaying);} ================================================================
-        if (VideoPlaying == 1) { // Video 01
-          VideoPlaying = 2 ;
-          aereo.volume(100);
-          println(VideoPlaying);
-          treno.volume(0);
-        }
-      }
-
-      void mouseReleased() {
-      if (VideoPlaying == 2) { 
-          VideoPlaying = 1 ;
-          treno.volume(100);
-          println(VideoPlaying);
-          aereo.volume(0);
-        }
-      }
-
-      void treno() { 
-      println("time");
-        println("treno");
-        image(treno, 0, 0, width, height);
-
-      }
-
-      void aereo() { 
-      println("time");
-        println("aereo");
-        image(aereo, 0, 0, width, height);
-
-      }
-
-      void toogle() { 
-        if (VideoPlaying == 1) {
-          treno1 = true;
-          aereo1 = false;
-        }
-
-        if (VideoPlaying == 2) {
-          treno1 = false;
-          aereo1 = true;
-        }
-      }
+          int gridify(float in) {
+          int out = int(round(in/grid)*grid);
+          return out;
+          }
 
     </script>
     <canvas id="sketch" style="border: 1px solid black;"></canvas>
